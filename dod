@@ -1,0 +1,302 @@
+local sys = game.Workspace:FindFirstChild("CoreGameplaySystems")
+local scraps = sys.ScrapSystems.MapElements:GetChildren()
+local ores = sys.OreSystems
+local cratesfolder = game.Workspace.CratesHolder
+local vtolcrates = cratesfolder.Random
+local batteryonlycrates = cratesfolder.Battery
+local creditcrates = cratesfolder.Credit
+
+local instant_scrap_pickup = true
+local instant_crate_use = true
+local instant_mine = true
+
+local fb = false
+
+local esp_maintoggle = true
+local esp_vtol = true
+local esp_battery = true
+local esp_credit = true
+local esp_oretoggle = true
+local esp_scraptoggle = true
+
+local repo = 'https://raw.githubusercontent.com/violin-suzutsuki/LinoriaLib/main/'
+local Library = loadstring(game:HttpGet(repo .. 'Library.lua'))()
+local ThemeManager = loadstring(game:HttpGet(repo .. 'addons/ThemeManager.lua'))()
+local SaveManager = loadstring(game:HttpGet(repo .. 'addons/SaveManager.lua'))()
+
+local Window = Library:CreateWindow({
+    Title = 'exothium.xyz day of dusk (by cilerted)',
+    Center = true,
+    AutoShow = true,
+    TabPadding = 3,
+    MenuFadeTime = 0.1
+})
+
+local Tabs = {
+    Main = Window:AddTab('dod'),
+    ['UI Settings'] = Window:AddTab('cfg'),
+}
+
+local LeftGroupBox = Tabs.Main:AddLeftGroupbox('features v1')
+local LeftGroupBoxA = Tabs.Main:AddLeftGroupbox('features v2')
+
+LeftGroupBox:AddToggle('InstantScrapPickup', {
+    Text = 'Instant Scrap Pickup',
+    Default = true,
+    Callback = function(Value)
+        instant_scrap_pickup = Value
+    end
+})
+
+LeftGroupBox:AddToggle('InstantCrateUse', {
+    Text = 'Instant Crate Use',
+    Default = true,
+    Callback = function(Value)
+        instant_crate_use = Value
+    end
+})
+
+LeftGroupBoxA:AddToggle('ESPMainToggle', {
+    Text = 'ESP Main Toggle',
+    Default = true,
+    Callback = function(Value)
+        esp_maintoggle = Value
+        updateESPVisibility()
+    end
+})
+
+LeftGroupBoxA:AddToggle('ESPOreToggle', {
+    Text = 'ESP Ores',
+    Default = true,
+    Callback = function(Value)
+        esp_oretoggle = Value
+        updateESPVisibility()
+    end
+})
+
+LeftGroupBoxA:AddToggle('ESPScrapToggle', {
+    Text = 'ESP Scraps',
+    Default = true,
+    Callback = function(Value)
+        esp_scraptoggle = Value
+        updateESPVisibility()
+    end
+})
+
+LeftGroupBoxA:AddToggle('FullbrightToggle', {
+    Text = 'fullbright (',
+    Default = true,
+    Callback = function(Value)
+        _G.FullBrightEnabled = not Value
+    end
+})
+
+--[[
+	WARNING: Heads up! This script has not been verified by ScriptBlox. Use at your own risk!
+]]
+if not _G.FullBrightExecuted then
+
+	_G.NormalLightingSettings = {
+		Brightness = game:GetService("Lighting").Brightness,
+		ClockTime = game:GetService("Lighting").ClockTime,
+		FogEnd = game:GetService("Lighting").FogEnd,
+		GlobalShadows = game:GetService("Lighting").GlobalShadows,
+		Ambient = game:GetService("Lighting").Ambient
+	}
+
+	game:GetService("Lighting"):GetPropertyChangedSignal("Brightness"):Connect(function()
+		if game:GetService("Lighting").Brightness ~= 1 and game:GetService("Lighting").Brightness ~= _G.NormalLightingSettings.Brightness then
+			_G.NormalLightingSettings.Brightness = game:GetService("Lighting").Brightness
+			if not _G.FullBrightEnabled then
+				repeat
+					wait()
+				until _G.FullBrightEnabled
+			end
+			game:GetService("Lighting").Brightness = 1
+		end
+	end)
+
+	game:GetService("Lighting"):GetPropertyChangedSignal("ClockTime"):Connect(function()
+		if game:GetService("Lighting").ClockTime ~= 12 and game:GetService("Lighting").ClockTime ~= _G.NormalLightingSettings.ClockTime then
+			_G.NormalLightingSettings.ClockTime = game:GetService("Lighting").ClockTime
+			if not _G.FullBrightEnabled then
+				repeat
+					wait()
+				until _G.FullBrightEnabled
+			end
+			game:GetService("Lighting").ClockTime = 12
+		end
+	end)
+
+	game:GetService("Lighting"):GetPropertyChangedSignal("FogEnd"):Connect(function()
+		if game:GetService("Lighting").FogEnd ~= 786543 and game:GetService("Lighting").FogEnd ~= _G.NormalLightingSettings.FogEnd then
+			_G.NormalLightingSettings.FogEnd = game:GetService("Lighting").FogEnd
+			if not _G.FullBrightEnabled then
+				repeat
+					wait()
+				until _G.FullBrightEnabled
+			end
+			game:GetService("Lighting").FogEnd = 786543
+		end
+	end)
+
+	game:GetService("Lighting"):GetPropertyChangedSignal("GlobalShadows"):Connect(function()
+		if game:GetService("Lighting").GlobalShadows ~= false and game:GetService("Lighting").GlobalShadows ~= _G.NormalLightingSettings.GlobalShadows then
+			_G.NormalLightingSettings.GlobalShadows = game:GetService("Lighting").GlobalShadows
+			if not _G.FullBrightEnabled then
+				repeat
+					wait()
+				until _G.FullBrightEnabled
+			end
+			game:GetService("Lighting").GlobalShadows = false
+		end
+	end)
+
+	game:GetService("Lighting"):GetPropertyChangedSignal("Ambient"):Connect(function()
+		if game:GetService("Lighting").Ambient ~= Color3.fromRGB(178, 178, 178) and game:GetService("Lighting").Ambient ~= _G.NormalLightingSettings.Ambient then
+			_G.NormalLightingSettings.Ambient = game:GetService("Lighting").Ambient
+			if not _G.FullBrightEnabled then
+				repeat
+					wait()
+				until _G.FullBrightEnabled
+			end
+			game:GetService("Lighting").Ambient = Color3.fromRGB(178, 178, 178)
+		end
+	end)
+
+	game:GetService("Lighting").Brightness = 1
+	game:GetService("Lighting").ClockTime = 12
+	game:GetService("Lighting").FogEnd = 786543
+	game:GetService("Lighting").GlobalShadows = false
+	game:GetService("Lighting").Ambient = Color3.fromRGB(178, 178, 178)
+
+	local LatestValue = true
+	spawn(function()
+		repeat
+			wait()
+		until _G.FullBrightEnabled
+		while wait() do
+			if _G.FullBrightEnabled ~= LatestValue then
+				if not _G.FullBrightEnabled then
+					game:GetService("Lighting").Brightness = _G.NormalLightingSettings.Brightness
+					game:GetService("Lighting").ClockTime = _G.NormalLightingSettings.ClockTime
+					game:GetService("Lighting").FogEnd = _G.NormalLightingSettings.FogEnd
+					game:GetService("Lighting").GlobalShadows = _G.NormalLightingSettings.GlobalShadows
+					game:GetService("Lighting").Ambient = _G.NormalLightingSettings.Ambient
+				else
+					game:GetService("Lighting").Brightness = 1
+					game:GetService("Lighting").ClockTime = 12
+					game:GetService("Lighting").FogEnd = 786543
+					game:GetService("Lighting").GlobalShadows = false
+					game:GetService("Lighting").Ambient = Color3.fromRGB(178, 178, 178)
+				end
+				LatestValue = not LatestValue
+			end
+		end
+	end)
+end
+
+_G.FullBrightExecuted = true
+_G.FullBrightEnabled = not _G.FullBrightEnabled
+
+local highlightInstances = {}
+
+local function createHighlight(instance)
+    local highlight = Instance.new("Highlight")
+    highlight.Parent = instance
+    highlight.FillColor = Color3.new(0.5, 0.5, 0.5) -- Grey color for scrap
+    highlight.OutlineColor = Color3.new(1, 1, 1)
+    highlight.Enabled = esp_maintoggle
+    return highlight
+end
+
+local function updateESPVisibility()
+    for _, highlight in pairs(highlightInstances) do
+        highlight.Enabled = esp_maintoggle
+    end
+end
+
+local function manageScrapESP()
+    for _, scrap in pairs(scraps) do
+        if esp_scraptoggle then
+            if not highlightInstances[scrap] then
+                highlightInstances[scrap] = createHighlight(scrap)
+            end
+        elseif highlightInstances[scrap] then
+            highlightInstances[scrap]:Destroy()
+            highlightInstances[scrap] = nil
+        end
+    end
+end
+
+local function manageOreESP()
+    for _, ore in pairs(ores:GetChildren()) do
+        if esp_oretoggle then
+            if not highlightInstances[ore] then
+                highlightInstances[ore] = createHighlight(ore)
+            end
+        elseif highlightInstances[ore] then
+            highlightInstances[ore]:Destroy()
+            highlightInstances[ore] = nil
+        end
+    end
+end
+
+game:GetService("RunService").Stepped:Connect(function()
+    manageScrapESP()
+    manageOreESP()
+end)
+
+task.spawn(function()
+    while true do
+        wait(1)
+        if instant_scrap_pickup then
+            for _, scrap in pairs(scraps) do
+                scrap.ProximityPrompt.HoldDuration = 0
+            end
+        end
+        if instant_crate_use then
+            for _, crate in pairs(cratesfolder:GetChildren()) do
+                local proximityPrompt = crate.ProximityHolder:FindFirstChild("ProximityPrompt")
+                if proximityPrompt then
+                    proximityPrompt.HoldDuration = 0
+                end
+            end
+        end
+        if instant_mine then
+            for _, ore in pairs(ores:GetChildren()) do
+                local resourcesFolder = ore:FindFirstChild("Resources")
+                if resourcesFolder then
+                    local resource = resourcesFolder:FindFirstChild("Resource")
+                    if resource then
+                        local proximityPrompt = resource:FindFirstChild("ProximityAttachment"):FindFirstChild("ProximityPrompt")
+                        if proximityPrompt then
+                            proximityPrompt.HoldDuration = 0
+                        end
+                    end
+                end
+            end
+        end
+    end
+end)
+
+Library:OnUnload(function()
+    for _, highlight in pairs(highlightInstances) do
+        highlight:Destroy()
+    end
+end)
+
+local MenuGroup = Tabs['UI Settings']:AddLeftGroupbox('Menu')
+MenuGroup:AddButton('Unload', function() Library:Unload() end)
+MenuGroup:AddLabel('Menu bind'):AddKeyPicker('MenuKeybind', { Default = 'End', NoUI = true, Text = 'Menu keybind' })
+
+Library.ToggleKeybind = Options.MenuKeybind
+ThemeManager:SetLibrary(Library)
+SaveManager:SetLibrary(Library)
+SaveManager:IgnoreThemeSettings()
+SaveManager:SetIgnoreIndexes({ 'MenuKeybind' })
+ThemeManager:SetFolder('Exothium.themes')
+SaveManager:SetFolder('Exothium.xyz/DoD')
+SaveManager:BuildConfigSection(Tabs['UI Settings'])
+ThemeManager:ApplyToTab(Tabs['UI Settings'])
+SaveManager:LoadAutoloadConfig()

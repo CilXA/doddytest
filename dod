@@ -1,4 +1,4 @@
-if key="sigma53428253785823"
+if key=="sigma53428253785823"
 local sys = game.Workspace:FindFirstChild("CoreGameplaySystems")
 local scraps = sys.ScrapSystems.MapElements:GetChildren()
 local ores = sys.OreSystems
